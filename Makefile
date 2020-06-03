@@ -192,14 +192,24 @@ ifeq ($(USE_LMDB), 1)
 	LIBRARIES += lmdb
 endif
 ifeq ($(USE_OPENCV), 1)
-	LIBRARIES += opencv_core opencv_highgui opencv_imgproc 
+	LIBRARIES += opencv_core opencv_highgui opencv_imgproc
 
-	ifeq ($(OPENCV_VERSION), 3)
+
+	#ifeq ($(OPENCV_VERSION), 3)
+	ifeq ($(OPENCV_VERSION), $(filter $(OPENCV_VERSION), 3 4))
 		LIBRARIES += opencv_imgcodecs
 	endif
+	ifeq ($(OPENCV_VERSION), 4)
+		ifeq ($(USE_PKG_CONFIG), 1)
+			INCLUDE_DIRS += $(shell pkg-config opencv4 --cflags-only-I | sed 's/-I//g')
+		else
+			INCLUDE_DIRS += /usr/include/opencv4 /usr/local/include/opencv4
+			INCLUDE_DIRS += /usr/include/opencv4/opencv2 /usr/local/include/opencv4/opencv
+		endif	
+	endif	
 		
 endif
-PYTHON_LIBRARIES ?= boost_python python2.7
+PYTHON_LIBRARIES ?= boost_python python3.6m
 WARNINGS := -Wall -Wno-sign-compare
 
 ##############################
@@ -401,7 +411,8 @@ LIBRARY_DIRS += $(BLAS_LIB)
 LIBRARY_DIRS += $(LIB_BUILD_DIR)
 
 # Automatic dependency generation (nvcc is handled separately)
-CXXFLAGS += -MMD -MP
+COMMON_FLAGS += -D_GLIBCXX_USE_CXX11_ABI=1
+CXXFLAGS += -MMD -MP -std=c++11 -D_GLIBCXX_USE_CXX11_ABI=1
 
 # Complete build flags.
 COMMON_FLAGS += $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
@@ -413,7 +424,12 @@ LINKFLAGS += -pthread -fPIC $(COMMON_FLAGS) $(WARNINGS)
 
 USE_PKG_CONFIG ?= 0
 ifeq ($(USE_PKG_CONFIG), 1)
-	PKG_CONFIG := $(shell pkg-config opencv --libs)
+	#PKG_CONFIG := $(shell pkg-config opencv --libs)
+	ifeq ($(OPENCV_VERSION), 4)
+		PKG_CONFIG := $(shell pkg-config opencv4 --libs)
+	else
+		PKG_CONFIG := $(shell pkg-config opencv --libs)
+	endif
 else
 	PKG_CONFIG :=
 endif
