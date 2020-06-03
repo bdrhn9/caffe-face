@@ -6,7 +6,7 @@ This branch is developed for deep face recognition, the related paper is as foll
     Yandong Wen, Kaipeng Zhang, Zhifeng Li*, Yu Qiao
     European Conference on Computer Vision. Springer International Publishing, 2016: 499-515.
 
-## In this repo, Makefile and Makefile.config are re-arranged to work on currently latest systems. My test system is CentOS 8, OpenCV 4.3,GCC 8.3.1, MATLAB 2020a.
+### In this repo, Makefile and Makefile.config are re-arranged to work on currently latest systems. My test system is CentOS 8, OpenCV 4.3, GCC 8.3.1, MATLAB 2020a.
 
 * [Updates](#updates)
 * [Files](#files)
